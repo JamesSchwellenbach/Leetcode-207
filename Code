@@ -1,0 +1,32 @@
+class Solution: #beats 88.7% runtime, 75.57% Memory
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        classesLeftToTake = {}
+        prereqSets = []
+        prereqSetsInverse = []
+        for i in range(numCourses):
+            classesLeftToTake[i] = 1
+            prereqSets.append(set())
+            prereqSetsInverse.append(set())
+        
+        for i in range(len(prerequisites)):
+            course, prereq = prerequisites[i]
+            prereqSets[course].add(prereq)
+            prereqSetsInverse[prereq].add(course)
+        
+        queue = deque()
+        for i in range(numCourses):
+            if len(prereqSets[i]) == 0:
+                queue.append(i)
+                classesLeftToTake.pop(i)
+        while queue:
+            if not classesLeftToTake:
+                return True
+            curr = queue.popleft()
+            for num in prereqSetsInverse[curr]:
+                prereqSets[num].remove(curr)
+                if len(prereqSets[num]) == 0:
+                    queue.append(num)
+                    classesLeftToTake.pop(num)
+        if classesLeftToTake:
+            return False
+        return True
